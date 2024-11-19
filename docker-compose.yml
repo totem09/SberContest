@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  service-a:
+    build: ./services/service-a
+    image: services/service-a:latest
+    ports:
+      - "5001:5000" # Проброс порта 5000 внутри контейнера на 5001 хоста
+    environment:
+      - SERVICE_NAME=Service A
+    networks:
+      - app-network
+    restart: unless-stopped # Автоматический рестарт при сбоях
+
+  service-b:
+    build: ./services/service-b
+    image: services/service-b:latest
+    ports:
+      - "5002:5000" # Проброс порта 5000 внутри контейнера на 5002 хоста
+    environment:
+      - SERVICE_NAME=Service B
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090" # Проброс порта Prometheus
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Монтирование конфигурации Prometheus
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000" # Проброс порта Grafana
+    volumes:
+      - grafana-storage:/var/lib/grafana # Персистентное хранилище для данных Grafana
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards # Монтирование дашбордов
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources # Монтирование конфигураций источников данных
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Пароль администратора Grafana
+    networks:
+      - app-network
+    depends_on:
+      - prometheus # Grafana запускается после Prometheus
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge # Используем bridge сеть для изоляции сервисов
+
+volumes:
+  grafana-storage:
