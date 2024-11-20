@@ -5,7 +5,7 @@ services:
     build: ./services/service-a
     image: services/service-a:latest
     ports:
-      - "5001:5000" # Проброс порта 5000 внутри контейнера на 5001 хоста
+      - "5001:5000" # Проброс порта 5000 внутри контейнера на 5001
     environment:
       - SERVICE_NAME=Service A
     networks:
@@ -16,7 +16,7 @@ services:
     build: ./services/service-b
     image: services/service-b:latest
     ports:
-      - "5002:5000" # Проброс порта 5000 внутри контейнера на 5002 хоста
+      - "5002:5000" # Проброс порта 5000 внутри контейнера на 5002
     environment:
       - SERVICE_NAME=Service B
     networks:

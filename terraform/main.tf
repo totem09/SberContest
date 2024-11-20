@@ -2,29 +2,32 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Создание VPC
-resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
-}
+module "eks" {
+  source          = "terraform-aws-modules/eks/aws"
+  cluster_name    = "sbercontest-cluster"
+  cluster_version = "1.25"
+  subnets         = ["subnet-0123456789abcdef0"] # Замените на ваши подсети
+  vpc_id          = "vpc-0123456789abcdef0"       # Замените на ваш VPC ID
 
-# Создание Subnet
-resource "aws_subnet" "main" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
-}
+  node_groups = {
+    eks_nodes = {
+      desired_capacity = 3
+      max_capacity     = 5
+      min_capacity     = 1
 
-# Создание EKS кластера
-resource "aws_eks_cluster" "k8s" {
-  name     = "microservices-cluster"
-  role_arn = aws_iam_role.eks_role.arn
-
-  vpc_config {
-    subnet_ids = [aws_subnet.main.id]
+      instance_type = "t3.medium"
+    }
   }
 }
 
-# Вывод kubeconfig
 output "kubeconfig" {
-  value = aws_eks_cluster.k8s.kubeconfig
+  value = module.eks.kubeconfig
+}
+
+output "cluster_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
+output "cluster_certificate_authority_data" {
+  value = module.eks.cluster_certificate_authority_data
 }

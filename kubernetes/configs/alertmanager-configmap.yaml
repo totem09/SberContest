@@ -7,9 +7,9 @@ data:
   alertmanager.yml: |
     global:
       smtp_smarthost: 'smtp.gmail.com:587'
-      smtp_from: 'youremail@gmail.com'
-      smtp_auth_username: 'youremail@gmail.com'
-      smtp_auth_password: 'yourapppassword'
+      smtp_from: 'email@gmail.com'
+      smtp_auth_username: 'email@gmail.com'
+      smtp_auth_password: 'password'
       smtp_require_tls: true
 
     route:
@@ -18,4 +18,4 @@ data:
     receivers:
       - name: 'email-notifications'
         email_configs:
-          - to: 'youremail@gmail.com'
+          - to: 'email@gmail.com'

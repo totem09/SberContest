@@ -5,12 +5,11 @@ stages:
   - rollback
 
 variables:
-  DOCKER_IMAGE_A: "yourregistry/service-a"
-  DOCKER_IMAGE_B: "yourregistry/service-b"
+  DOCKER_IMAGE_A: "ghcr.io/totem09/SberContest/service-a"
+  DOCKER_IMAGE_B: "ghcr.io/totem09/SberContest/service-b"
 
 before_script:
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" \
-    --password-stdin $CI_REGISTRY
+  - echo "$GITHUB_TOKEN" | docker login ghcr.io -u totem09 --password-stdin
 
 build_service_a:
   stage: build
@@ -38,7 +37,7 @@ test_service_a:
 test_service_b:
   stage: test
   script:
-    - docker run --rm $DOCKER_IMAGE_B:$CI_COMMIT_SHA python -m unittest
+    - docker run --rm $DOCKER_IMAGE_B:$CI_COMMIT_SHA python -m unittest discover
   only:
     - main
 

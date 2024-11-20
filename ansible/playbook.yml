@@ -5,11 +5,16 @@
       apt:
         name: docker.io
         state: present
+        update_cache: yes
 
     - name: Install Kubernetes dependencies
       apt:
-        name: ['apt-transport-https', 'ca-certificates', 'curl']
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
         state: present
+        update_cache: yes
 
     - name: Add Kubernetes apt key
       apt_key:
@@ -23,20 +28,25 @@
 
     - name: Install kubelet, kubeadm, kubectl
       apt:
-        name: ['kubelet', 'kubeadm', 'kubectl']
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
         state: present
         update_cache: yes
 
-    - name: Mark Kubernetes packages to hold
+    - name: Hold Kubernetes packages
       apt:
-        name: ['kubelet', 'kubeadm', 'kubectl']
-        state: present
-        update_cache: yes
-        hold: yes
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: held
 
     - name: Initialize Kubernetes cluster
       command: kubeadm init --pod-network-cidr=10.244.0.0/16
       when: inventory_hostname == groups['kubernetes-master'][0]
+      register: kubeadm_init
 
     - name: Set up kubeconfig for root
       copy:

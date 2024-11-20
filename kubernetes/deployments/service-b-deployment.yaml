@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: service-b
-          image: yourregistry/service-b:latest
+          image: ghcr.io/totem09/sbercontest-service-b:latest
           ports:
             - containerPort: 5000
           env:
